@@ -3,6 +3,8 @@ package com.github.mikephil.charting.renderer;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
@@ -166,11 +168,18 @@ public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
 
                     mRenderPaint.setStyle(dataSet.getDecreasingPaintStyle());
 
-                    c.drawRect(
-                            mBodyBuffers[0], mBodyBuffers[3],
-                            mBodyBuffers[2], mBodyBuffers[1],
-                            mRenderPaint);
-
+                    if (e.getCorners().length == 8) {
+                        final Path path = new Path();
+                        final RectF rect = new RectF(mBodyBuffers[0], mBodyBuffers[3],
+                                mBodyBuffers[2], mBodyBuffers[1]);
+                        path.addRoundRect(rect, e.getCorners(), Path.Direction.CW);
+                        c.drawPath(path, mRenderPaint);
+                    } else {
+                        c.drawRect(
+                                mBodyBuffers[0], mBodyBuffers[3],
+                                mBodyBuffers[2], mBodyBuffers[1],
+                                mRenderPaint);
+                    }
                 } else if (open < close) {
 
                     if (dataSet.getIncreasingColor() == ColorTemplate.COLOR_NONE) {
@@ -181,10 +190,18 @@ public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
 
                     mRenderPaint.setStyle(dataSet.getIncreasingPaintStyle());
 
-                    c.drawRect(
-                            mBodyBuffers[0], mBodyBuffers[1],
-                            mBodyBuffers[2], mBodyBuffers[3],
-                            mRenderPaint);
+                    if (e.getCorners().length == 8) {
+                        final Path path = new Path();
+                        final RectF rect = new RectF(mBodyBuffers[0], mBodyBuffers[1],
+                                mBodyBuffers[2], mBodyBuffers[3]);
+                        path.addRoundRect(rect, e.getCorners(), Path.Direction.CW);
+                        c.drawPath(path, mRenderPaint);
+                    } else {
+                        c.drawRect(
+                                mBodyBuffers[0], mBodyBuffers[1],
+                                mBodyBuffers[2], mBodyBuffers[3],
+                                mRenderPaint);
+                    }
                 } else { // equal values
 
                     if (dataSet.getNeutralColor() == ColorTemplate.COLOR_NONE) {
@@ -315,8 +332,8 @@ public class CandleStickChartRenderer extends LineScatterCandleRadarRenderer {
                         Utils.drawImage(
                                 c,
                                 icon,
-                                (int)(x + iconsOffset.x),
-                                (int)(y + iconsOffset.y),
+                                (int) (x + iconsOffset.x),
+                                (int) (y + iconsOffset.y),
                                 icon.getIntrinsicWidth(),
                                 icon.getIntrinsicHeight());
                     }
